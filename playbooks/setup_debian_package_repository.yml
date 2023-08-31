@@ -1,6 +1,7 @@
 ---
 - name: Set up Debian package repository
-  hosts: <IP_ADDRESS>
+  hosts: localhost
+  connection: local
   become: true
 
   tasks:
@@ -15,11 +16,11 @@
 
     - name: Copy repository packages
       copy:
-        src: /home/<USER>/ansible/files/debian_packages/*
+        src: /home/<USER>/ansible/files/debian_packages/
         dest: /var/www/html/deb
 
     - name: Generate Packages index
-      command: dpkg-scanpackages /var/www/html/deb /dev/null | gzip -9c > /var/www/html/deb/Packages.gz
+      shell: dpkg-scanpackages /var/www/html/deb /dev/null | gzip -9c > /var/www/html/deb/Packages.gz
       args:
         creates: /var/www/html/deb/Packages.gz
 
