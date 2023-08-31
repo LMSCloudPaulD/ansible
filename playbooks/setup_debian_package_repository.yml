@@ -1,0 +1,43 @@
+---
+- name: Set up Debian package repository
+  hosts: <IP_ADDRESS>
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name: [ 'nginx', 'dpkg-dev', 'apache2-utils' ]
+        state: present
+
+    - name: Copy repository packages
+      copy:
+        src: /home/<USER>/ansible/files/debian_packages/*
+        dest: /var/www/html/deb
+
+    - name: Generate Packages index
+      command: dpkg-scanpackages /var/www/html/deb /dev/null | gzip -9c > /var/www/html/deb/Packages.gz
+      args:
+        creates: /var/www/html/deb/Packages.gz
+
+    - name: Create Nginx virtual host
+      template:
+        src: /home/<USER>/ansible/files/nginx_config/nginx_repo.conf.j2
+        dest: /etc/nginx/sites-available/repo
+      notify: Reload Nginx
+
+    - name: Enable Nginx virtual host
+      file:
+        src: /etc/nginx/sites-available/repo
+        dest: /etc/nginx/sites-enabled/repo
+        state: link
+      notify: Reload Nginx
+
+  handlers:
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
