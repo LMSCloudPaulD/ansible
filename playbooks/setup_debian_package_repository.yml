@@ -1,8 +1,9 @@
----
-- name: Set up Debian package repository
+- name: Set up Debian package repository with reprepro
   hosts: localhost
-  connection: local
   become: true
+
+  vars:
+    user_name: <USER> # Replace with your actual username
 
   tasks:
     - name: Update apt cache
@@ -11,22 +12,31 @@
 
     - name: Install required packages
       apt:
-        name: [ 'nginx', 'dpkg-dev', 'apache2-utils' ]
+        name:
+          - reprepro
+          - nginx
         state: present
+
+    - name: Create repository directory
+      file:
+        path: /var/www/html/deb
+        state: directory
 
     - name: Copy repository packages
       copy:
-        src: /home/<USER>/ansible/files/debian_packages/
+        src: /home/{{ user_name }}/ansible/files/debian_packages/
         dest: /var/www/html/deb
 
-    - name: Generate Packages index
-      shell: dpkg-scanpackages /var/www/html/deb /dev/null | gzip -9c > /var/www/html/deb/Packages.gz
+    - name: Initialize reprepro repository
+      command: reprepro -b /var/www/html/deb includedeb bullseye /home/{{ user_name }}/ansible/files/debian_packages/*.deb
       args:
-        creates: /var/www/html/deb/Packages.gz
+        creates:
+          - /var/www/html/deb/dists/bullseye/main/binary-amd64/Packages
+          - /var/www/html/deb/dists/bullseye/main/binary-arm64/Packages
 
     - name: Create Nginx virtual host
       template:
-        src: /home/<USER>/ansible/files/nginx_config/nginx_repo.conf.j2
+        src: /home/{{ user_name }}/ansible/files/nginx_config/nginx_repo.conf.j2
         dest: /etc/nginx/sites-available/repo
       notify: Reload Nginx
 
@@ -42,3 +52,4 @@
       service:
         name: nginx
         state: reloaded
+

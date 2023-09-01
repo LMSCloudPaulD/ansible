@@ -1,0 +1,7 @@
+Origin: lmscloud
+Label: debian-packages
+Codename: bullseye
+Architectures: amd64 arm64 i386
+Components: main
+Description: LMSCloud specific debian packages
+SignWith: 1F615ADEA5231DC95AC94DA1B3718C8F4080D9AB
