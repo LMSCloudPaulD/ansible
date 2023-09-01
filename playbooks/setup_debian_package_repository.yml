@@ -1,5 +1,6 @@
 - name: Set up debian package repository with reprepro
   hosts: localhost
+  connection: local
   become: true
 
   vars:
