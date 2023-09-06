@@ -28,6 +28,11 @@
         src: /home/{{ user_name }}/ansible/files/debian_packages/
         dest: /var/www/html/debian
 
+    - name: Create repository conf directory
+      file:
+        path: /var/www/html/debian/conf
+        state: directory
+
     - name: Copy repository conf
       copy:
         src: /home/{{ user_name }}/ansible/files/reprepro/distributions
