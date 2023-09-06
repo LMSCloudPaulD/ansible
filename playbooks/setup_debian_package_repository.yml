@@ -39,11 +39,14 @@
         dest: /var/www/html/debian/conf/distributions
 
     - name: Initialize reprepro repository
-      command: reprepro -b /var/www/html/debian includedeb bullseye /home/{{ user_name }}/ansible/files/debian_packages/*.deb
+      command: reprepro -b /var/www/html/debian includedeb bullseye "{{ item }}"
       args:
         creates:
           - /var/www/html/debian/dists/bullseye/main/binary-amd64/Packages
           - /var/www/html/debian/dists/bullseye/main/binary-arm64/Packages
+      with_fileglob:
+        - /home/{{ user_name }}/ansible/files/debian_packages/*.deb
+      become: true
 
     - name: Create Nginx virtual host
       template:
