@@ -33,10 +33,6 @@
         src: /home/{{ user_name }}/ansible/files/reprepro/distributions
         dest: /var/www/html/debian/conf/distributions
 
-    - name: Set up GPG agent environment for reprepro
-      gpg_agent_info:
-        state: present
-
     - name: Initialize reprepro repository
       command: reprepro -b /var/www/html/debian includedeb bullseye "{{ item }}"
       args:
