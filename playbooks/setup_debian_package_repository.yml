@@ -23,11 +23,6 @@
         path: /var/www/html/debian
         state: directory
 
-    - name: Copy repository packages
-      copy:
-        src: /home/{{ user_name }}/ansible/files/debian_packages/
-        dest: /var/www/html/debian
-
     - name: Create repository conf directory
       file:
         path: /var/www/html/debian/conf
@@ -46,6 +41,10 @@
           - /var/www/html/debian/dists/bullseye/main/binary-arm64/Packages
       with_fileglob:
         - /home/{{ user_name }}/ansible/files/debian_packages/*.deb
+      become: true
+
+    - name: Export reprepro repository
+      command: reprepro -b /var/www/html/debian export bullseye
       become: true
 
     - name: Create Nginx virtual host
