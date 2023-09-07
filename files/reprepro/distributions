@@ -4,4 +4,4 @@ Codename: bullseye
 Architectures: amd64 arm64 i386
 Components: main
 Description: LMSCloud specific debian packages
-SignWith: 1F615ADEA5231DC95AC94DA1B3718C8F4080D9AB
+SignWith: DDBC15254F010F86F1574B4A16F4397EBACC4DD6
